@@ -63,7 +63,8 @@ Wie Abschnitt 6 der Projektbeschreibung. Kommentar wird nur über `textContent`/
 
 ## Bewusste Abweichungen / meine Entscheidungen
 
-- **Phase 1 (localStorage-Prototyp) entfällt** als eigener Schritt: das Frontend wird direkt gegen die API gebaut und lokal mit `wrangler dev` getestet. Spart Doppelarbeit.
+- **Phase 1 – Prototyp als claude.ai-Artifact:** `src/index.html` läuft standalone mit Speicherung in `localStorage` (nur dieses Gerät), Sperrlogik clientseitig, Admin-Passwort-Platzhalter `admin`. Veröffentlicht als Artifact zum Test am Handy. Die Datenzugriffe laufen über eine kleine Speicherschicht (`store`), die in Phase 3 auf die API umgestellt wird; der Rest der Seite bleibt gleich.
+- Ein Artifact ist nicht der Produktivbetrieb: gemeinsamer Speicher nur für angemeldete claude.ai-Nutzer, keine serverseitige Sperre/Admin-Prüfung.
 - Tests mit `node:test` statt zusätzlichem Test-Framework; einzige Dev-Abhängigkeiten: `wrangler`, `qrcode` (nur für das QR-Skript).
 - Deployment (Cloudflare-Account, KV-Namespace, Secret, `wrangler deploy`) führst du selbst aus – ich habe keinen Zugang zu deinem Cloudflare-Account. Die README beschreibt die Schritte; die KV-ID wird danach in `wrangler.toml` eingetragen.
 
