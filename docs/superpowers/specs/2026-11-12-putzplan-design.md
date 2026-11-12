@@ -71,3 +71,15 @@ Wie Abschnitt 6 der Projektbeschreibung. Kommentar wird nur über `textContent`/
 ## Nicht-Ziele
 
 Erinnerungen, Kostenerfassung, Export, Namen, Zeitstempel, Desktop-Optimierung.
+
+## Änderung 2026-11-12: Toilettenplan (ersetzt die Oberfläche aus §6 der Projektbeschreibung)
+
+Klarstellung: Geputzt wird die **gemeinsame Toilette**, nicht die Proberäume. Proberaum-Nummer = Kennung der Band.
+
+- Übersicht als Tabelle: Zeilen = Monate (neueste oben), Spalten = Putzen / Müll rausbringen / Putzzeug kaufen.
+- Zelle = alle Räume, die die Aufgabe im Monat erledigt haben (mehrere möglich). Wer geputzt hat, trägt ein; keine feste Reihenfolge.
+- Oben „Ich bin: Proberaum N" (gemerkt, `?raum=N`). Antippen einer Zelle trägt den eigenen Raum ein/aus; fremde Einträge nicht entfernbar.
+- Übersicht ist auch ohne gewählten Raum sichtbar; Eintragen erst nach Raumwahl.
+- Gesperrte Monate ausgegraut, nicht antippbar. Admin: jeder Raum-Chip mit „×" entfernbar, „+" trägt den gewählten Raum ein, auch in gesperrten Monaten.
+- Kommentar: einer pro Raum und Monat; Eingabe unter der Tabelle mit Monatsauswahl (editierbare Monate), alle Kommentare gesammelt darunter.
+- Titel „Toilettenplan". Datenmodell, Sperrlogik und API bleiben unverändert.

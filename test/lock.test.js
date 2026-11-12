@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   currentMonth, lastEditableDay, firstLockedDay, isLocked, isFuture,
-  listMonths, formatMonth, formatDay, parseRoom, zonedDate,
+  listMonths, formatMonth, formatMonthShort, formatDay, parseRoom, zonedDate,
 } from '../src/lock.js';
 
 const TZ = 'Europe/Berlin';
@@ -74,4 +74,9 @@ test('parseRoom akzeptiert nur Ganzzahlen 1..roomCount', () => {
   for (const v of ['0', '31', 'abc', '1.5', '', ' 3', null]) {
     assert.equal(parseRoom(v, 30), null, `Wert ${JSON.stringify(v)}`);
   }
+});
+
+test('formatMonthShort', () => {
+  assert.equal(formatMonthShort('2026-11'), 'Nov 2026');
+  assert.equal(formatMonthShort('2027-03'), 'Mär 2027');
 });

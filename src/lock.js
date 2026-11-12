@@ -74,6 +74,11 @@ export function formatMonth(monat) {
   return `${MONATE[month - 1]} ${year}`;
 }
 
+export function formatMonthShort(monat) {
+  const { year, month } = parseMonth(monat);
+  return `${MONATE[month - 1].slice(0, 3)} ${year}`;
+}
+
 export function formatDay({ month, day }) {
   return `${pad(day)}.${pad(month)}.`;
 }

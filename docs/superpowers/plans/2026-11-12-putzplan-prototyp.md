@@ -105,3 +105,15 @@
   Erwartet: alle Prüfungen OK.
 - [ ] **Step 3: Artifact veröffentlichen** – `file_path: src/index.html`, `files: {"lock.js": "src/lock.js"}`, `icon: "broom"`.
 - [ ] **Step 4: Push** – `git push -u origin ccr-14b3c9b6-42xtna`
+
+### Task 4: Umbau auf Toilettenplan-Tabelle
+
+**Files:** Modify `src/lock.js`, `test/lock.test.js`, `src/index.html`
+
+**Interfaces – Produces:** `formatMonthShort(monat) -> string` („Nov 2026", „Mär 2027").
+
+- [ ] **Step 1: Failing test** `formatMonthShort('2026-11') === 'Nov 2026'`, `formatMonthShort('2027-03') === 'Mär 2027'`; `npm test` → FAIL
+- [ ] **Step 2: Implementieren**, `npm test` → PASS
+- [ ] **Step 3: `src/index.html` umbauen** gemäß Design-Abschnitt „Änderung 2026-11-12" (Tabelle, Zellen-Toggle, Admin-Chips, Kommentarbereich), Titel „Toilettenplan".
+- [ ] **Step 4: Playwright-Prüfung** (iPhone 13): Tabelle ohne Raum sichtbar; Antippen ohne Raum → Hinweis; mit Raum 12 Eintragen/Austragen; zweiter Raum 7 in derselben Zelle → „7, 12"; kein horizontales Scrollen; 06.12. November gesperrt; Admin entfernt Raum 7 per „×"; Kommentar mit HTML als Text. Erwartet: alle OK.
+- [ ] **Step 5: Commit, Artifact unter gleicher URL aktualisieren, Push**
