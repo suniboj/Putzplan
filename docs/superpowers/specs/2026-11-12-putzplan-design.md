@@ -83,3 +83,10 @@ Klarstellung: Geputzt wird die **gemeinsame Toilette**, nicht die Proberäume. P
 - Gesperrte Monate ausgegraut, nicht antippbar. Admin: jeder Raum-Chip mit „×" entfernbar, „+" trägt den gewählten Raum ein, auch in gesperrten Monaten.
 - Kommentar: einer pro Raum und Monat; Eingabe unter der Tabelle mit Monatsauswahl (editierbare Monate), alle Kommentare gesammelt darunter.
 - Titel „Toilettenplan". Datenmodell, Sperrlogik und API bleiben unverändert.
+
+## Änderung 2026-11-12 (2): schlichtes Design, kommende Monate
+
+- Minimalistisch: weiße/dunkle Fläche, nur Zeilenlinien, eine Akzentfarbe (eigener Raum als gefüllte Markierung).
+- Angezeigt werden Startmonat bis aktueller Monat + 3 (`monthsAhead = 3`), **chronologisch** (älteste oben), aktueller Monat hervorgehoben. Ersetzt A1/A2.
+- Kommende Monate: sichtbar mit Status „kommt", nicht antippbar (serverseitig weiterhin `400` für Zukunftsmonate).
+- Neue reine Funktion `listMonthsAhead(startMonth, now, tz, ahead)` in `lock.js`.

@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   currentMonth, lastEditableDay, firstLockedDay, isLocked, isFuture,
-  listMonths, formatMonth, formatMonthShort, formatDay, parseRoom, zonedDate,
+  listMonths, listMonthsAhead, formatMonth, formatMonthShort, formatDay, parseRoom, zonedDate,
 } from '../src/lock.js';
 
 const TZ = 'Europe/Berlin';
@@ -79,4 +79,14 @@ test('parseRoom akzeptiert nur Ganzzahlen 1..roomCount', () => {
 test('formatMonthShort', () => {
   assert.equal(formatMonthShort('2026-11'), 'Nov 2026');
   assert.equal(formatMonthShort('2027-03'), 'Mär 2027');
+});
+
+test('listMonthsAhead: Startmonat bis aktueller Monat + n, chronologisch', () => {
+  assert.deepEqual(listMonthsAhead('2026-11', at('2026-12-03T09:00:00Z'), TZ, 3),
+    ['2026-11', '2026-12', '2027-01', '2027-02', '2027-03']);
+});
+
+test('listMonthsAhead: Startmonat in der Zukunft beginnt beim Startmonat', () => {
+  assert.deepEqual(listMonthsAhead('2026-12', at('2026-11-12T12:00:00Z'), TZ, 2),
+    ['2026-12', '2027-01']);
 });

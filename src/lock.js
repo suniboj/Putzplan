@@ -69,6 +69,20 @@ export function listMonths(startMonth, now, tz) {
   return result;
 }
 
+/** Monate vom Startmonat bis aktueller Monat + `ahead`, chronologisch (älteste zuerst). */
+export function listMonthsAhead(startMonth, now, tz, ahead) {
+  let { year, month } = parseMonth(currentMonth(now, tz));
+  for (let i = 0; i < ahead; i++) ({ year, month } = nextMonth({ year, month }));
+  const end = toMonthString(year, month);
+  const result = [];
+  let cur = parseMonth(startMonth);
+  while (toMonthString(cur.year, cur.month) <= end) {
+    result.push(toMonthString(cur.year, cur.month));
+    cur = nextMonth(cur);
+  }
+  return result;
+}
+
 export function formatMonth(monat) {
   const { year, month } = parseMonth(monat);
   return `${MONATE[month - 1]} ${year}`;

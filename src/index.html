@@ -1,213 +1,129 @@
 <title>Toilettenplan</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
-  /* Layout: Emailleschild als Kopf, darunter eine Fliesenwand (Zeilen = Monate, Spalten = Aufgaben),
-     jede Aufgabe mit eigener Glasur; erledigte Kacheln sind glasiert und tragen die Raumnummern. */
+  /* Layout: schlichte Tabelle, Zeilen = Monate chronologisch, Spalten = Aufgaben; nur Linien, eine Akzentfarbe */
   :root {
-    --wall: #dfe5e3;          /* Fuge / Hintergrund */
-    --tile: #f7f9f8;          /* unglasierte Kachel */
-    --tile-edge: #c3ccc9;
-    --ink: #17222b;
-    --ink-soft: #55626b;
-    --enamel: #1d4f8c;        /* Emailleschild */
-    --enamel-ink: #f4f7fb;
-    --glaze-putzen: #1f8a76;
-    --glaze-muell: #a66d00;
-    --glaze-putzzeug: #b4473a;
-    --glaze-ink: #ffffff;
-    --matte: #e9ecea;         /* gesperrte Kachel */
-    --hatch: #d3d9d7;
+    --bg: #ffffff;
+    --fg: #16181b;
+    --muted: #8a9096;
+    --faint: #c4c8cc;
+    --line: #e7e9eb;
+    --accent: #0b7a5c;
+    --accent-fg: #ffffff;
+    --row-current: #f3f8f6;
     --danger: #b3261e;
-    --font: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    --font-num: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    --grout: 6px;
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --wall: #0d1316; --tile: #1b2428; --tile-edge: #2b373c; --ink: #e9eef0; --ink-soft: #9aa8ae;
-      --enamel: #2c64a8; --enamel-ink: #f4f7fb;
-      --glaze-putzen: #2aa58e; --glaze-muell: #d99b1c; --glaze-putzzeug: #cc5a4c; --glaze-ink: #0b1215;
-      --matte: #141b1e; --hatch: #1f292d; --danger: #f2827a;
+      --bg: #111315; --fg: #eceef0; --muted: #8b939a; --faint: #4a5056; --line: #24282c;
+      --accent: #4cc39d; --accent-fg: #0b1512; --row-current: #16201d; --danger: #f2827a;
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --wall: #0d1316; --tile: #1b2428; --tile-edge: #2b373c; --ink: #e9eef0; --ink-soft: #9aa8ae;
-    --enamel: #2c64a8; --enamel-ink: #f4f7fb;
-    --glaze-putzen: #2aa58e; --glaze-muell: #d99b1c; --glaze-putzzeug: #cc5a4c; --glaze-ink: #0b1215;
-    --matte: #141b1e; --hatch: #1f292d; --danger: #f2827a;
+    --bg: #111315; --fg: #eceef0; --muted: #8b939a; --faint: #4a5056; --line: #24282c;
+    --accent: #4cc39d; --accent-fg: #0b1512; --row-current: #16201d; --danger: #f2827a;
     color-scheme: dark;
   }
 
   * { box-sizing: border-box; }
-  body {
-    background: var(--wall); color: var(--ink); font-family: var(--font);
-    font-size: 16px; line-height: 1.4; -webkit-text-size-adjust: 100%;
-  }
-  body::before {
-    content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
-    z-index: 10; background: var(--wall);
-  }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 16px; line-height: 1.4; -webkit-text-size-adjust: 100%; }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
   .wrap {
-    max-width: 560px; margin: 0 auto;
+    max-width: 520px; margin: 0 auto;
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
 
-  /* Kopf: Emailleschild */
-  header {
-    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
-    background: var(--wall); padding-block: 10px;
-  }
-  .sign {
-    display: flex; align-items: center; gap: 12px;
-    background: var(--enamel); color: var(--enamel-ink);
-    border-radius: 14px; padding: 10px 12px 10px 10px;
-    box-shadow: inset 0 0 0 3px var(--enamel), inset 0 0 0 5px var(--enamel-ink), 0 2px 0 rgb(0 0 0 / 0.15);
-  }
-  .wc {
-    flex: none; font-weight: 900; font-size: 30px; letter-spacing: 0.02em; line-height: 1;
-    padding: 6px 10px; border: 3px solid var(--enamel-ink); border-radius: 10px;
-  }
-  .sign-text { min-width: 0; flex: 1; display: grid; gap: 4px; }
-  h1 { margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.85; }
+  header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+  h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
   select {
-    width: 100%; min-height: 44px; font: inherit; font-size: 17px; font-weight: 800;
-    color: var(--enamel); background: var(--enamel-ink); border: 0; border-radius: 8px; padding: 0 10px;
+    min-height: 44px; font: inherit; font-weight: 600; color: var(--fg); background: transparent;
+    border: 1px solid var(--line); border-radius: 8px; padding: 0 8px; max-width: 60%;
   }
 
-  main .wrap { display: grid; gap: 20px; padding-block: 6px 24px; }
-  .notice {
-    margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--tile);
-    border: 2px dashed var(--enamel); color: var(--ink); font-weight: 600;
-  }
-  .help { margin: 0; color: var(--ink-soft); font-size: 14px; }
+  main .wrap { display: grid; gap: 24px; padding-block: 8px 24px; }
+  .notice { margin: 8px 0 0; color: var(--muted); font-size: 15px; }
+  .help { margin: 0; color: var(--muted); font-size: 14px; }
 
-  /* Fliesenwand */
-  table {
-    width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: var(--grout);
-    margin: calc(var(--grout) * -1); width: calc(100% + 2 * var(--grout));
-  }
-  col.c-month { width: 25%; }
-  thead th {
-    font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--ink-soft); text-align: center; padding: 0 0 2px; line-height: 1.15;
-  }
+  table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+  col.c-month { width: 31%; }
+  th, td { border-bottom: 1px solid var(--line); vertical-align: middle; }
+  thead th { padding: 12px 0 8px; font-size: 13px; font-weight: 500; color: var(--muted); text-align: center; }
   thead th:first-child { text-align: left; }
-  thead th span { display: block; height: 4px; border-radius: 2px; margin: 4px auto 0; width: 60%; }
-  tbody th, td {
-    background: var(--tile); border-radius: 6px; padding: 0;
-    box-shadow: inset 0 -2px 0 var(--tile-edge);
-  }
-  tbody th { text-align: left; padding: 8px 6px 8px 10px; vertical-align: middle; }
-  .m-name { display: block; font-weight: 900; font-size: 15px; line-height: 1.1; }
-  .m-year { display: block; font-size: 12px; font-weight: 700; color: var(--ink-soft); }
-  .m-state { display: inline-block; margin-top: 4px; font-size: 11px; font-weight: 800; letter-spacing: 0.02em; }
-  .m-state.current { background: var(--enamel); color: var(--enamel-ink); padding: 1px 6px; border-radius: 4px; }
-  .m-state.open { color: var(--glaze-muell); }
-  .m-state.locked { color: var(--ink-soft); }
-
-  tr.locked > th, tr.locked > td {
-    background: repeating-linear-gradient(135deg, var(--matte) 0 6px, var(--hatch) 6px 8px);
-    box-shadow: none;
-  }
-  tr.current > th { box-shadow: inset 0 0 0 2px var(--enamel); }
+  tbody th { text-align: left; padding: 10px 0; font-weight: 600; font-size: 15px; }
+  .m-name { font-variant-numeric: tabular-nums; }
+  .m-state { display: block; font-size: 12px; font-weight: 500; color: var(--muted); }
+  .m-state.current { color: var(--accent); font-weight: 600; }
+  tr.current > * { background: var(--row-current); }
+  tr.current > th { box-shadow: inset 3px 0 0 var(--accent); padding-left: 10px; }
+  tr.future > th, tr.locked > th { color: var(--muted); }
+  td { padding: 0; text-align: center; }
 
   .cell {
-    width: 100%; aspect-ratio: 1 / 1; min-height: 64px; padding: 6px;
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; align-content: center;
-    gap: 2px 6px; border-radius: 6px; background: transparent;
+    width: 100%; min-height: 52px; padding: 6px 2px; display: flex; flex-wrap: wrap;
+    align-items: center; justify-content: center; align-content: center; gap: 2px 8px;
   }
-  button.cell { font: inherit; color: var(--ink); border: 0; cursor: pointer; }
-  button.cell:active { transform: translateY(1px); }
-  td.done .cell { color: var(--glaze-ink); }
-  td.done[data-task="putzen"] { background: var(--glaze-putzen); }
-  td.done[data-task="muell"] { background: var(--glaze-muell); }
-  td.done[data-task="putzzeug"] { background: var(--glaze-putzzeug); }
-  td.done { box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.18), inset 0 2px 0 rgb(255 255 255 / 0.25); }
-  tr.locked td.done { opacity: 0.75; }
+  button.cell { font: inherit; color: var(--fg); background: transparent; border: 0; cursor: pointer; border-radius: 6px; }
+  button.cell:hover { background: var(--line); }
+  .chip { font-weight: 700; font-size: 16px; font-variant-numeric: tabular-nums; line-height: 1.6; }
+  .chip.mine { color: var(--accent-fg); background: var(--accent); border-radius: 999px; padding: 0 8px; }
+  tr.locked .chip { color: var(--muted); }
+  tr.locked .chip.mine { background: var(--muted); color: var(--bg); }
+  .add { color: var(--faint); font-size: 20px; line-height: 1; }
+  .dash { color: var(--faint); }
 
-  .chip {
-    display: inline-flex; align-items: center; font-family: var(--font-num); font-weight: 900;
-    font-size: 22px; line-height: 1; font-variant-numeric: tabular-nums;
-  }
-  .chip.mine { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 4px; }
-  .cell:has(.chip:nth-of-type(3)) .chip { font-size: 16px; }
-  .add { color: var(--ink-soft); font-size: 26px; font-weight: 300; line-height: 1; }
-  td.done .add { color: var(--glaze-ink); opacity: 0.8; font-size: 20px; }
-  .dash { color: var(--ink-soft); }
-
-  /* Admin-Kachel */
   .chip button, .admin-add { font: inherit; border: 0; background: transparent; color: inherit; cursor: pointer; }
-  .chip button { font-size: 16px; padding: 4px 2px 4px 3px; line-height: 1; }
-  .admin-add {
-    min-width: 44px; min-height: 32px; border: 2px dashed currentColor; border-radius: 999px;
-    font-weight: 900; font-size: 14px; color: var(--ink-soft);
-  }
-  td.done .admin-add { color: var(--glaze-ink); }
+  .chip button { padding: 4px 2px 4px 4px; font-size: 15px; line-height: 1; }
+  .admin-add { min-width: 44px; min-height: 32px; color: var(--accent); font-weight: 700; font-size: 14px; }
 
-  /* Kommentare */
-  section h2 { margin: 0 0 8px; font-size: 13px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
-  .editor {
-    background: var(--tile); border-radius: 10px; padding: 12px; display: grid; gap: 8px;
-    box-shadow: inset 0 -2px 0 var(--tile-edge);
-  }
-  .editor select { background: var(--wall); color: var(--ink); }
-  .editor-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 14px; font-weight: 700; color: var(--ink-soft); }
+  section h2 { margin: 0 0 8px; font-size: 15px; font-weight: 600; }
+  .editor { display: grid; gap: 8px; }
+  .editor select { max-width: 100%; }
+  .editor-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 14px; color: var(--muted); }
   .editor-top span { font-variant-numeric: tabular-nums; }
   textarea {
-    width: 100%; min-height: 64px; resize: vertical; font: inherit; color: var(--ink);
-    background: var(--wall); border: 0; border-radius: 8px; padding: 10px 12px;
+    width: 100%; min-height: 64px; resize: vertical; font: inherit; color: var(--fg); background: transparent;
+    border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
   }
-  .comments { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--grout); }
-  .comments li {
-    background: var(--tile); border-radius: 8px; padding: 8px 12px; overflow-wrap: anywhere;
-    box-shadow: inset 0 -2px 0 var(--tile-edge);
-  }
-  .c-meta { display: block; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--ink-soft); }
-  .empty { color: var(--ink-soft); margin: 0; }
+  .comments { list-style: none; margin: 0; padding: 0; }
+  .comments li { padding: 8px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+  .comments li:first-child { border-top: 1px solid var(--line); }
+  .c-meta { display: block; font-size: 12px; color: var(--muted); }
+  .empty { color: var(--muted); margin: 0; font-size: 15px; }
 
-  textarea:focus-visible, select:focus-visible, button:focus-visible, input:focus-visible {
-    outline: 3px solid var(--enamel); outline-offset: 2px;
-  }
+  textarea:focus-visible, select:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-  /* Fuß */
-  footer .wrap { display: grid; gap: 10px; padding-block: 4px 32px; color: var(--ink-soft); font-size: 14px; }
+  footer .wrap { display: grid; gap: 10px; padding-block: 8px 32px; color: var(--muted); font-size: 13px; }
   .proto { margin: 0; }
   .admin-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .btn {
-    min-height: 44px; padding: 0 16px; font: inherit; font-weight: 800; border-radius: 8px;
-    border: 2px solid var(--tile-edge); background: var(--tile); color: var(--ink); cursor: pointer;
+    min-height: 44px; padding: 0 14px; font: inherit; font-weight: 600; border-radius: 8px;
+    border: 1px solid var(--line); background: transparent; color: var(--fg); cursor: pointer;
   }
-  .btn.primary { background: var(--enamel); color: var(--enamel-ink); border-color: var(--enamel); }
+  .btn.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
   .admin-form { display: flex; gap: 8px; flex-wrap: wrap; }
   .admin-form input {
-    flex: 1 1 160px; min-width: 0; min-height: 44px; font: inherit; color: var(--ink);
-    background: var(--tile); border: 2px solid var(--tile-edge); border-radius: 8px; padding: 0 12px;
+    flex: 1 1 160px; min-width: 0; min-height: 44px; font: inherit; color: var(--fg); background: transparent;
+    border: 1px solid var(--line); border-radius: 8px; padding: 0 12px;
   }
-  .admin-active { color: var(--enamel); font-weight: 800; }
-  .admin-error { color: var(--danger); margin: 0; font-weight: 700; }
+  .admin-active { color: var(--accent); font-weight: 600; }
+  .admin-error { color: var(--danger); margin: 0; }
 
   .toast {
-    position: fixed; left: 50%; transform: translateX(-50%);
-    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-    max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 10px;
-    background: var(--enamel); color: var(--enamel-ink); font-weight: 800; font-size: 15px; text-align: center;
-    box-shadow: 0 4px 16px rgb(0 0 0 / 0.25); z-index: 20;
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 8px; background: var(--fg); color: var(--bg);
+    font-weight: 600; font-size: 15px; text-align: center; z-index: 20;
   }
   .toast.error { background: var(--danger); color: #fff; }
-  @media (prefers-reduced-motion: reduce) { button.cell:active { transform: none; } }
 </style>
 
 <header>
   <div class="wrap">
-    <div class="sign">
-      <div class="wc" aria-hidden="true">WC</div>
-      <div class="sign-text">
-        <h1>Toilettenplan</h1>
-        <select id="room" aria-label="Eigenen Proberaum wählen"></select>
-      </div>
-    </div>
+    <h1>Toilettenplan</h1>
+    <select id="room" aria-label="Eigenen Proberaum wählen"></select>
   </div>
 </header>
 
@@ -220,9 +136,9 @@
         <thead>
           <tr>
             <th scope="col">Monat</th>
-            <th scope="col">Putzen<span style="background:var(--glaze-putzen)"></span></th>
-            <th scope="col">Müll<span style="background:var(--glaze-muell)"></span></th>
-            <th scope="col">Putz&shy;zeug<span style="background:var(--glaze-putzzeug)"></span></th>
+            <th scope="col">Putzen</th>
+            <th scope="col">Müll</th>
+            <th scope="col">Putzzeug</th>
           </tr>
         </thead>
         <tbody id="rows"></tbody>
@@ -257,10 +173,10 @@
 
 <script type="module">
   import {
-    currentMonth, lastEditableDay, isLocked, listMonths, formatMonth, formatMonthShort, formatDay, parseRoom,
+    currentMonth, lastEditableDay, isLocked, isFuture, listMonths, listMonthsAhead, formatMonth, formatMonthShort, formatDay, parseRoom,
   } from './lock.js';
 
-  const CONFIG = { roomCount: 30, startMonth: '2026-11', graceDays: 5, tz: 'Europe/Berlin' };
+  const CONFIG = { roomCount: 30, startMonth: '2026-11', graceDays: 5, tz: 'Europe/Berlin', monthsAhead: 3 };
   const TASKS = [
     { key: 'putzen', label: 'Putzen' },
     { key: 'muell', label: 'Müll rausbringen' },
@@ -374,8 +290,8 @@
 
   function renderRoomSelect() {
     const sel = $('room');
-    const opts = [new Option('Ich bin: Proberaum wählen', '')];
-    for (let i = 1; i <= CONFIG.roomCount; i++) opts.push(new Option(`Ich bin: Proberaum ${i}`, String(i)));
+    const opts = [new Option('Raum wählen', '')];
+    for (let i = 1; i <= CONFIG.roomCount; i++) opts.push(new Option(`Raum ${i}`, String(i)));
     sel.replaceChildren(...opts);
     sel.value = state.room ? String(state.room) : '';
   }
@@ -385,12 +301,13 @@
     $('help').textContent = state.adminPassword
       ? 'Admin: „×" entfernt einen Raum, „+" trägt den oben gewählten Raum ein, auch in gesperrten Monaten.'
       : state.room
-        ? `Kachel antippen, um Raum ${state.room} einzutragen oder wieder zu entfernen. Unterstrichen = dein Raum.`
-        : 'Die Zahlen auf den Kacheln sind die Proberäume, die die Aufgabe im Monat erledigt haben.';
+        ? `Feld antippen, um Raum ${state.room} einzutragen oder zu entfernen. Markiert = dein Raum.`
+        : 'Die Zahlen sind die Proberäume, die die Aufgabe im Monat erledigt haben.';
   }
 
-  function monthState(monat, thisMonth, locked) {
+  function monthState(monat, thisMonth, locked, future) {
     if (monat === thisMonth) return { cls: 'current', text: 'aktuell' };
+    if (future) return { cls: 'future', text: 'kommt' };
     if (!locked) return { cls: 'open', text: `offen bis ${formatDay(lastEditableDay(monat, CONFIG.graceDays))}` };
     return { cls: 'locked', text: state.adminPassword ? 'gesperrt (Admin)' : 'gesperrt 🔒' };
   }
@@ -399,11 +316,14 @@
     return el('span', { className: 'chip' + (r === state.room ? ' mine' : '') }, String(r));
   }
 
-  function renderCell(monat, task, locked) {
+  function renderCell(monat, task, locked, future) {
     const rooms = roomsFor(monat, task.key);
     const td = el('td');
     td.dataset.task = task.key;
-    if (rooms.length) td.classList.add('done');
+    if (future) {
+      td.append(el('div', { className: 'cell' }));
+      return td;
+    }
 
     if (state.adminPassword) {
       const box = el('div', { className: 'cell' });
@@ -448,17 +368,17 @@
   function renderGrid() {
     const now = new Date();
     const thisMonth = currentMonth(now, CONFIG.tz);
-    const rows = listMonths(CONFIG.startMonth, now, CONFIG.tz).map((monat) => {
-      const locked = isLocked(monat, now, CONFIG.graceDays, CONFIG.tz);
-      const st = monthState(monat, thisMonth, locked);
-      const [name, year] = formatMonthShort(monat).split(' ');
+    const rows = listMonthsAhead(CONFIG.startMonth, now, CONFIG.tz, CONFIG.monthsAhead).map((monat) => {
+      const future = isFuture(monat, now, CONFIG.tz);
+      const locked = !future && isLocked(monat, now, CONFIG.graceDays, CONFIG.tz);
+      const st = monthState(monat, thisMonth, locked, future);
       const th = el('th', { scope: 'row' },
-        el('span', { className: 'm-name', textContent: name }),
-        el('span', { className: 'm-year', textContent: year }),
+        el('span', { className: 'm-name', textContent: formatMonthShort(monat) }),
         el('span', { className: `m-state ${st.cls}`, textContent: st.text }));
-      const tr = el('tr', {}, th, ...TASKS.map((t) => renderCell(monat, t, locked)));
+      const tr = el('tr', {}, th, ...TASKS.map((t) => renderCell(monat, t, locked, future)));
       tr.dataset.month = monat;
       if (monat === thisMonth) tr.classList.add('current');
+      else if (future) tr.classList.add('future');
       else if (locked) tr.classList.add('locked');
       return tr;
     });
